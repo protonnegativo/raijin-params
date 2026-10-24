@@ -1,0 +1,13 @@
+http://127.0.0.1:19151/fetch
+http://127.0.0.1:19151/preview
+http://127.0.0.1:19151/login
+http://127.0.0.1:19151/logout
+http://127.0.0.1:19151/download
+http://127.0.0.1:19151/render
+http://127.0.0.1:19151/tools/ping
+http://127.0.0.1:19151/api/user
+http://127.0.0.1:19151/api/order
+http://127.0.0.1:19151/account
+http://127.0.0.1:19151/admin
+http://127.0.0.1:19151/report
+http://127.0.0.1:19151/about

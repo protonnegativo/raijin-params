@@ -1,0 +1,114 @@
+[92m    _
+   /_| _ '
+  (  |/ /(//) v2.2.7
+      _/      [0m
+
+[1;97m[*][0m Scanning 0/13: http://127.0.0.1:19151/fetch
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/3     [1;93m[!][0m Processing chunks: 2/3     [1;93m[!][0m Processing chunks: 3/3     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;32m[+][0m Parameters found: callback, url
+
+[1;97m[*][0m Scanning 1/13: http://127.0.0.1:19151/preview
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/3     [1;93m[!][0m Processing chunks: 2/3     [1;93m[!][0m Processing chunks: 3/3     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;32m[+][0m Parameters found: callback, url
+
+[1;97m[*][0m Scanning 2/13: http://127.0.0.1:19151/login
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/3     [1;93m[!][0m Processing chunks: 2/3     [1;93m[!][0m Processing chunks: 3/3     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;32m[+][0m Parameters found: next
+
+[1;97m[*][0m Scanning 3/13: http://127.0.0.1:19151/logout
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/3     [1;93m[!][0m Processing chunks: 2/3     [1;93m[!][0m Processing chunks: 3/3     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;32m[+][0m Parameters found: next
+
+[1;97m[*][0m Scanning 4/13: http://127.0.0.1:19151/download
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/3     [1;93m[!][0m Processing chunks: 2/3     [1;93m[!][0m Processing chunks: 3/3     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;32m[+][0m Parameters found: file
+
+[1;97m[*][0m Scanning 5/13: http://127.0.0.1:19151/render
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/3     [1;93m[!][0m Processing chunks: 2/3     [1;93m[!][0m Processing chunks: 3/3     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;32m[+][0m Parameters found: template, lang
+
+[1;97m[*][0m Scanning 6/13: http://127.0.0.1:19151/tools/ping
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/3     [1;93m[!][0m Processing chunks: 2/3     [1;93m[!][0m Processing chunks: 3/3     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/1     [1;32m[+][0m Parameters found: host, cmd
+
+[1;97m[*][0m Scanning 7/13: http://127.0.0.1:19151/api/user
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/3     [1;93m[!][0m Processing chunks: 2/3     [1;93m[!][0m Processing chunks: 3/3     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;32m[+][0m Parameters found: id  
+
+[1;97m[*][0m Scanning 8/13: http://127.0.0.1:19151/api/order
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/3     [1;93m[!][0m Processing chunks: 2/3     [1;93m[!][0m Processing chunks: 3/3     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;32m[+][0m Parameters found: id  
+
+[1;97m[*][0m Scanning 9/13: http://127.0.0.1:19151/account
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/3     [1;93m[!][0m Processing chunks: 2/3     [1;93m[!][0m Processing chunks: 3/3     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;32m[+][0m Parameters found: tab, user_id
+
+[1;97m[*][0m Scanning 10/13: http://127.0.0.1:19151/admin
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/3     [1;93m[!][0m Processing chunks: 2/3     [1;93m[!][0m Processing chunks: 3/3     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/1     [1;32m[+][0m Parameters found: debug, admin
+
+[1;97m[*][0m Scanning 11/13: http://127.0.0.1:19151/report
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/3     [1;93m[!][0m Processing chunks: 2/3     [1;93m[!][0m Processing chunks: 3/3     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/1     [1;32m[+][0m Parameters found: format, sort
+
+[1;97m[*][0m Scanning 12/13: http://127.0.0.1:19151/about
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/3     [1;93m[!][0m Processing chunks: 2/3     [1;93m[!][0m Processing chunks: 3/3     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/1     [1;32m[+][0m Parameters found: ref 
+
+[92m    _
+   /_| _ '
+  (  |/ /(//) v2.2.7
+      _/      [0m
+
+[1;97m[*][0m Scanning 0/13: http://127.0.0.1:19151/fetch
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/1     [1;93m[!][0m No parameters were discovered.
+
+[1;97m[*][0m Scanning 1/13: http://127.0.0.1:19151/preview
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/1     [1;93m[!][0m No parameters were discovered.
+
+[1;97m[*][0m Scanning 2/13: http://127.0.0.1:19151/login
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/1     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/2     [1;93m[!][0m Processing chunks: 2/2     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;93m[!][0m Processing chunks: 1/4     [1;93m[!][0m Processing chunks: 2/4     [1;93m[!][0m Processing chunks: 3/4     [1;93m[!][0m Processing chunks: 4/4     [1;32m[+][0m Parameters found: password, username
+
+[1;97m[*][0m Scanning 3/13: http://127.0.0.1:19151/logout
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/1     [1;93m[!][0m No parameters were discovered.
+
+[1;97m[*][0m Scanning 4/13: http://127.0.0.1:19151/download
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/1     [1;93m[!][0m No parameters were discovered.
+
+[1;97m[*][0m Scanning 5/13: http://127.0.0.1:19151/render
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/1     [1;93m[!][0m No parameters were discovered.
+
+[1;97m[*][0m Scanning 6/13: http://127.0.0.1:19151/tools/ping
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/1     [1;93m[!][0m No parameters were discovered.
+
+[1;97m[*][0m Scanning 7/13: http://127.0.0.1:19151/api/user
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/1     [1;93m[!][0m No parameters were discovered.
+
+[1;97m[*][0m Scanning 8/13: http://127.0.0.1:19151/api/order
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/1     [1;93m[!][0m No parameters were discovered.
+
+[1;97m[*][0m Scanning 9/13: http://127.0.0.1:19151/account
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/1     [1;93m[!][0m No parameters were discovered.
+
+[1;97m[*][0m Scanning 10/13: http://127.0.0.1:19151/admin
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/1     [1;93m[!][0m No parameters were discovered.
+
+[1;97m[*][0m Scanning 11/13: http://127.0.0.1:19151/report
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/1     [1;93m[!][0m No parameters were discovered.
+
+[1;97m[*][0m Scanning 12/13: http://127.0.0.1:19151/about
+[1;97m[*][0m Probing the target for stability
+[1;93m[!][0m Processing chunks: 1/1     [1;93m[!][0m No parameters were discovered.
+
