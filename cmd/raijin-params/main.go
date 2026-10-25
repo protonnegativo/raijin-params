@@ -37,7 +37,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	fs := flag.NewFlagSet("raijin-params", flag.ContinueOnError)
 	fs.SetOutput(stderr)
 	var targets, inputs multi
-	fs.Var(&targets, "u", "target URL (repeatable)")
+	fs.Var(&targets, "u", "target URL (repeatable; default: every host the scope names)")
 	list := fs.String("l", "", "file with one target URL per line")
 	scopeFile := fs.String("scope", "", "scope file (required): domains, *.wildcards, IPs, CIDRs, !exclusions")
 	methods := fs.String("method", "GET", "comma-separated request methods, one arjun run each: GET, POST, JSON, XML (arjun -m)")
@@ -57,7 +57,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	showVersion := fs.Bool("version", false, "print the version")
 	showBanner := fs.Bool("banner", false, "print the Raijin banner to stderr (off by default to keep output small)")
 	fs.Usage = func() {
-		fmt.Fprintf(stderr, "usage: raijin-params --scope scope.txt (-u url | -l urls.txt | --input arjun.json) [flags] [-- extra arjun args]\n\n")
+		fmt.Fprintf(stderr, "usage: raijin-params --scope scope.txt [-u url | -l urls.txt | --input arjun.json] [flags] [-- extra arjun args]\n\nWith no targets it tests every host the scope names.\n\n")
 		fs.PrintDefaults()
 	}
 	if err := fs.Parse(args); err != nil {
@@ -131,8 +131,35 @@ func run(args []string, stdout, stderr io.Writer) int {
 			}
 			targets = append(targets, lines...)
 		}
-		inScope = filter(targets, sc, res.Omitted)
+		if len(targets) == 0 {
+			// no targets given: test what the scope names. arjun skips a URL that does not start with
+			// http, and from https:// it falls back to http, so a bare host becomes https://<host>/.
+			hosts, wildcards, ranges := sc.Targets()
+			for _, h := range hosts {
+				if strings.Contains(h, ":") {
+					h = "[" + h + "]"
+				}
+				inScope = append(inScope, "https://"+h+"/")
+			}
+			for _, w := range wildcards {
+				res.Next = append(res.Next, "raijin-subs --scope "+*scopeFile+" -d "+strings.TrimPrefix(w, "*.")+", then raijin-params -l <live hosts> to cover "+w)
+			}
+			for _, r := range ranges {
+				res.Next = append(res.Next, "raijin-ports --scope "+*scopeFile+" -host "+r+", then raijin-params -l <open ports> to cover "+r)
+			}
+			if len(inScope) > 0 {
+				res.Next = append(res.Next, "raijin-crawl --scope "+*scopeFile+" to find more endpoints with parameters, then raijin-params -l <urls>")
+			}
+		} else {
+			inScope = filter(targets, sc, res.Omitted)
+		}
 		if len(inScope) == 0 {
+			if len(res.Next) > 0 {
+				res.Summary = "the scope names no single host to scan"
+				res.Target = *scopeFile
+				write(stdout, &res, *format, *pretty)
+				return 1
+			}
 			fmt.Fprintln(stderr, "raijin-params: no targets in scope")
 			return 1
 		}

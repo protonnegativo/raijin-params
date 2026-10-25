@@ -45,6 +45,7 @@ You also need [arjun](https://github.com/s0md3v/Arjun) on `PATH` (`pipx install 
 ## Usage
 
 ```bash
+raijin-params --scope scope.txt                                # test every host the scope names
 raijin-params --scope scope.txt -u https://app.example.com/search
 raijin-params --scope scope.txt -l urls.txt --method GET,POST --wordlist medium --rate 20
 raijin-params --scope scope.txt --input arjun.json               # reduce output you already have (-oJ)
@@ -60,6 +61,8 @@ example.com
 10.0.0.0/24
 !admin.example.com
 ```
+
+With no `-u`, `-l` or `--input`, raijin-params tests what the scope names: every domain, every IP, and every address of ranges up to a /24, minus exclusions, each as `https://<host>/` (arjun skips a URL that does not start with `http`, and falls back to `http://` when `https://` fails). A wildcard names no host and a larger range is too big to sweep blindly, so for each one `next` gives the command that enumerates it first (`raijin-subs` or `raijin-ports`); `next` also suggests `raijin-crawl` to find more endpoints with parameters than the root URLs.
 
 Targets outside the scope are dropped before arjun runs, and results for out-of-scope URLs are dropped from the output. Both are counted in `omitted.out_of_scope`. A target without a scheme gets `http://`, because arjun skips it otherwise.
 
@@ -154,7 +157,7 @@ The Raijin banner is **off by default**, so normal runs stay small. `--banner` p
 | Flag | Default | |
 |---|---|---|
 | `--scope` | (required) | scope file |
-| `-u` / `-l` / `--input` | | one target URL (repeatable) / target file / existing arjun `-oJ` export (repeatable) |
+| `-u` / `-l` / `--input` | every host the scope names | one target URL (repeatable) / target file / existing arjun `-oJ` export (repeatable) |
 | `--method` | GET | comma-separated methods, one arjun run each: `GET`, `POST`, `JSON`, `XML` (arjun `-m`) |
 | `--wordlist` | arjun's (`large`) | `small`, `medium`, `large` or a file (arjun `-w`) |
 | `--rate`, `--threads`, `--timeout`, `--delay` | | arjun `--rate-limit` / `-t` / `-T` / `-d` |
