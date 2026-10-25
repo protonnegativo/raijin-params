@@ -40,6 +40,8 @@ Against `arjun -oT`, raijin-params is **7×** smaller on the noisy run and **1.8
 go install github.com/protonnegativo/raijin-params/cmd/raijin-params@latest
 ```
 
+That installs the latest release.
+
 You also need [arjun](https://github.com/s0md3v/Arjun) on `PATH` (`pipx install arjun`), or pass `--arjun <path>`. raijin-params was built against arjun 2.2.7. x8 is not supported yet.
 
 ## Usage
@@ -73,7 +75,7 @@ raijin-params runs arjun once per method in `--method` (`GET` by default; `POST`
 ```json
 {
   "tool": "raijin-params",
-  "version": "0.1.0",
+  "version": "v0.1.0",
   "target": "13 target(s)",
   "summary": "13 URLs, 22 parameters (18 names): 12 findings (5 high, 6 medium, 1 low), 5 groups",
   "origin": "http://127.0.0.1:19151",
@@ -170,9 +172,13 @@ The Raijin banner is **off by default**, so normal runs stay small. `--banner` p
 | `--arjun` | arjun | path to the binary |
 | `--banner` | false | print the banner to stderr |
 
+## Versions
+
+Releases are tagged automatically on every change and every passing engine update. `raijin-params --version` shows the release and the tested engine versions (`raijin-params v0.1.3 (tested with arjun 2.2.7)`). `raijin-mcp update` updates every Raijin tool at once.
+
 ## Engine versions
 
-The arjun version raijin-params is tested with is in `engines.json` (embedded in the binary). arjun has no version flag, so before a run raijin-params asks the Python on the arjun script's `#!` line for the installed package version (`importlib.metadata`). It warns in `errors` when the installed arjun has another major version or is older than the tested one (`engine_version`), and when arjun's export has entries without `params` or `method` (`engine_format`, counted in `omitted.unparsed`). Neither changes the exit code. A weekly GitHub Actions job runs the live benchmark with the latest arjun and opens a PR to bump `engines.json` when it passes, or an issue when it breaks.
+The arjun version raijin-params is tested with is in `engines.json` (embedded in the binary). arjun has no version flag, so before a run raijin-params asks the Python on the arjun script's `#!` line for the installed package version (`importlib.metadata`). It warns in `errors` when the installed arjun has another major version or is older than the tested one (`engine_version`), and when arjun's export has entries without `params` or `method` (`engine_format`, counted in `omitted.unparsed`). Neither changes the exit code. A weekly GitHub Actions job runs the live benchmark with the latest arjun and, when it passes with a newer arjun, commits the bump to `engines.json` and tags a release, or opens an issue when it breaks.
 
 ## Development
 

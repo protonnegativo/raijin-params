@@ -12,7 +12,6 @@ on:
 permissions:
   contents: write
   issues: write
-  pull-requests: write
 
 jobs:
   drift:
@@ -24,6 +23,8 @@ jobs:
       RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
@@ -66,6 +67,42 @@ jobs:
           name: live-bench
           path: ${{ runner.temp }}/live
           retention-days: 14
+      - name: Commit the bump and release
+        id: bump
+        if: success()
+        env:
+          INSTALLED: ${{ steps.versions.outputs.installed }}
+          TESTED: ${{ steps.versions.outputs.tested }}
+        run: |
+          newer=$(printf '%s\n%s\n' "$TESTED" "$INSTALLED" | sort -V | tail -1)
+          if [ "$INSTALLED" = "$TESTED" ] || [ "$newer" != "$INSTALLED" ]; then
+            echo "arjun $INSTALLED is not newer than the tested $TESTED"; exit 0
+          fi
+          # only engines.json: the refreshed fixtures stay in the artifact
+          git checkout -- bench
+          jq --arg v "$INSTALLED" '.arjun.version = $v' engines.json > engines.json.new
+          python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); print("{\n" + ",\n".join("  %s: %s" % (json.dumps(k), json.dumps(v)) for k, v in d.items()) + "\n}")' engines.json.new > engines.json
+          rm engines.json.new
+          if ! go test ./... > "$RUNNER_TEMP/test.log" 2>&1; then
+            { echo "go test ./... failed with engines.json at arjun $INSTALLED:"; tail -40 "$RUNNER_TEMP/test.log"; } >> "$RUNNER_TEMP/verify.txt"
+            cat "$RUNNER_TEMP/test.log"
+            exit 1
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add engines.json
+          git commit -m "Test with arjun $INSTALLED"
+          git push origin "HEAD:${{ github.event.repository.default_branch }}"
+          # a push made with GITHUB_TOKEN does not trigger release.yml, so tag here
+          .github/release.sh patch
+      - name: Close the drift issue
+        if: success()
+        env:
+          INSTALLED: ${{ steps.versions.outputs.installed }}
+        run: |
+          for n in $(gh issue list --label engine-drift --state open --json number --jq '.[].number'); do
+            gh issue close "$n" --comment "Passes with arjun $INSTALLED: $RUN_URL"
+          done
       - name: Open or update the drift issue
         if: failure() && steps.versions.outputs.installed != ''
         env:
@@ -78,32 +115,4 @@ jobs:
             gh issue comment "$n" --body-file "$RUNNER_TEMP/body.md"
           else
             gh issue create --title "Engine drift: arjun $INSTALLED" --label engine-drift --body-file "$RUNNER_TEMP/body.md"
-          fi
-      - name: Open or update the bump PR
-        if: success()
-        env:
-          INSTALLED: ${{ steps.versions.outputs.installed }}
-          TESTED: ${{ steps.versions.outputs.tested }}
-        run: |
-          newer=$(printf '%s\n%s\n' "$TESTED" "$INSTALLED" | sort -V | tail -1)
-          if [ "$INSTALLED" = "$TESTED" ] || [ "$newer" != "$INSTALLED" ]; then
-            echo "arjun $INSTALLED is not newer than the tested $TESTED"; exit 0
-          fi
-          branch="engine-bump/arjun-$INSTALLED"
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          # only engines.json: the refreshed fixtures stay in the artifact
-          git checkout -- bench
-          git checkout -B "$branch"
-          jq --arg v "$INSTALLED" '.arjun.version = $v' engines.json > engines.json.new
-          python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); print("{\n" + ",\n".join("  %s: %s" % (json.dumps(k), json.dumps(v)) for k, v in d.items()) + "\n}")' engines.json.new > engines.json
-          rm engines.json.new
-          git add engines.json
-          git commit -m "Test with arjun $INSTALLED"
-          git push -f origin "$branch"
-          { echo "arjun $TESTED → $INSTALLED"; echo; echo "The live benchmark passed with arjun $INSTALLED:"; echo; echo '```'; cat "$RUNNER_TEMP/verify.txt"; echo '```'; echo; echo "The refreshed fixtures are in the live-bench artifact of $RUN_URL"; } > "$RUNNER_TEMP/body.md"
-          if [ -n "$(gh pr list --head "$branch" --state open --json number --jq '.[0].number')" ]; then
-            gh pr edit "$branch" --body-file "$RUNNER_TEMP/body.md"
-          else
-            gh pr create --head "$branch" --title "Test with arjun $INSTALLED" --body-file "$RUNNER_TEMP/body.md"
           fi
