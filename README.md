@@ -170,6 +170,10 @@ The Raijin banner is **off by default**, so normal runs stay small. `--banner` p
 | `--arjun` | arjun | path to the binary |
 | `--banner` | false | print the banner to stderr |
 
+## Engine versions
+
+The arjun version raijin-params is tested with is in `engines.json` (embedded in the binary). arjun has no version flag, so before a run raijin-params asks the Python on the arjun script's `#!` line for the installed package version (`importlib.metadata`). It warns in `errors` when the installed arjun has another major version or is older than the tested one (`engine_version`), and when arjun's export has entries without `params` or `method` (`engine_format`, counted in `omitted.unparsed`). Neither changes the exit code. A weekly GitHub Actions job runs the live benchmark with the latest arjun and opens a PR to bump `engines.json` when it passes, or an issue when it breaks.
+
 ## Development
 
 ```bash

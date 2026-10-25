@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -232,5 +233,49 @@ func TestScopeAloneTestsWhatTheScopeNames(t *testing.T) {
 	}
 	if len(res.Next) != 2 || !strings.Contains(res.Next[0], "raijin-subs --scope "+scopePath+" -d example.com") || !strings.HasPrefix(res.Next[1], "raijin-crawl --scope "+scopePath) {
 		t.Errorf("next = %v", res.Next)
+	}
+}
+
+func TestRenamedFieldIsAnEngineFormatError(t *testing.T) {
+	b, err := os.ReadFile("../../testdata/sample.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	p := filepath.Join(t.TempDir(), "renamed.json")
+	if err := os.WriteFile(p, bytes.ReplaceAll(b, []byte(`"params"`), []byte(`"parameters"`)), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	var out, errb bytes.Buffer
+	if code := run([]string{"--scope", scopeFile(t), "--input", p}, &out, &errb); code != 0 {
+		t.Fatalf("exit %d", code)
+	}
+	var res struct {
+		Omitted map[string]int
+		Errors  []struct{ Kind, Hint string }
+	}
+	if err := json.Unmarshal(out.Bytes(), &res); err != nil {
+		t.Fatal(err)
+	}
+	if len(res.Errors) != 1 || res.Errors[0].Kind != "engine_format" || !strings.Contains(res.Errors[0].Hint, "had no params or method") || res.Omitted["unparsed"] == 0 {
+		t.Errorf("got %s", out.String())
+	}
+}
+
+func TestVersionCheckWarnsOnAnOlderArjun(t *testing.T) {
+	// arjun's #! line names a "python" that answers 1.9.0 to the version script
+	dir := t.TempDir()
+	py, bin := filepath.Join(dir, "python"), filepath.Join(dir, "arjun")
+	if err := os.WriteFile(py, []byte("#!/bin/sh\necho 1.9.0\n"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(bin, []byte("#!"+py+"\n"), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	errs := versionCheck(context.Background(), bin)
+	if len(errs) != 1 || errs[0].Kind != "engine_version" || !strings.HasPrefix(errs[0].Hint, "arjun 1.9.0 is not the tested ") {
+		t.Errorf("%v", errs)
+	}
+	if errs := versionCheck(context.Background(), filepath.Join(dir, "missing")); len(errs) != 0 {
+		t.Errorf("no arjun, no version, no warning: %v", errs)
 	}
 }

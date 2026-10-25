@@ -14,6 +14,7 @@ import (
 	"os/signal"
 	"strings"
 
+	raijinparams "github.com/protonnegativo/raijin-params"
 	"github.com/protonnegativo/raijin-params/internal/arjun"
 	"github.com/protonnegativo/raijin-params/internal/banner"
 	"github.com/protonnegativo/raijin-params/internal/reduce"
@@ -179,6 +180,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 
 		ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 		defer stop()
+		res.Errors = append(res.Errors, versionCheck(ctx, *bin)...)
 		var stderrTail string
 		results, stderrTail, err = arjun.Run(ctx, inScope, arjun.Options{
 			Binary: *bin, Methods: ms, Wordlist: *wordlist, Rate: *rate, Threads: *threads,
@@ -201,6 +203,16 @@ func run(args []string, stdout, stderr io.Writer) int {
 			}
 			res.Errors = append(res.Errors, schema.Error{Kind: "engine_error", Hint: hint})
 		}
+	}
+
+	if n := arjun.Malformed(results); n > 0 {
+		// those results carry no parameters, so nothing else counts them
+		res.Omitted["unparsed"] += n
+		src := res.Raw
+		if src == "" {
+			src = strings.Join(inputs, ", ")
+		}
+		res.Errors = append(res.Errors, schema.Error{Kind: "engine_format", Hint: fmt.Sprintf("%d of %d arjun results had no params or method; the engine's output format may have changed. Read %s for the full output", n, len(results), src)})
 	}
 
 	opt := reduce.Defaults()
@@ -245,6 +257,21 @@ func run(args []string, stdout, stderr io.Writer) int {
 	}
 	write(stdout, &res, *format, *pretty)
 	return 0
+}
+
+// versionCheck warns when the installed arjun is not the version in engines.json (another major version,
+// or older). It never fails the run: a version it cannot read is not reported.
+func versionCheck(ctx context.Context, bin string) []schema.Error {
+	engines, err := raijinparams.Engines()
+	e, ok := engines["arjun"]
+	if err != nil || !ok {
+		return nil
+	}
+	installed := arjun.InstalledVersion(ctx, bin)
+	if !arjun.Untested(installed, e.Version) {
+		return nil
+	}
+	return []schema.Error{{Kind: "engine_version", Hint: fmt.Sprintf("arjun %s is not the tested %s; results may be incomplete. Install the tested version: %s", installed, e.Version, e.Install(e.Version))}}
 }
 
 // useColor is true when w is a terminal and NO_COLOR is not set.
