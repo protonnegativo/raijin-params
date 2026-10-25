@@ -1,0 +1,109 @@
+name: Engine drift
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+    inputs:
+      arjun:
+        description: arjun version to test (latest or X.Y.Z)
+        default: latest
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      WANT: ${{ github.event.inputs.arjun || 'latest' }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Install arjun
+        run: |
+          pkg=$(jq -r .arjun.pip engines.json)
+          if [ "$WANT" = latest ]; then pipx install "$pkg"; else pipx install "$pkg==$WANT"; fi
+      - name: Installed versions
+        id: versions
+        run: |
+          # arjun has no version flag: ask the Python on its #! line
+          py=$(head -1 "$(command -v arjun)" | sed 's/^#!//')
+          installed=$($py -c "import importlib.metadata as m; print(m.version('arjun'))")
+          tested=$(jq -r .arjun.version engines.json)
+          echo "arjun $installed (tested: $tested)"
+          echo "installed=$installed" >> "$GITHUB_OUTPUT"
+          echo "tested=$tested" >> "$GITHUB_OUTPUT"
+      - run: pip install tiktoken
+      - name: Live benchmark
+        id: bench
+        run: |
+          set +e
+          W="$RUNNER_TEMP/live"
+          LIVE=1 PY=python3 bench/run.sh "$W" > "$RUNNER_TEMP/bench.log" 2>&1
+          code=$?
+          cat "$RUNNER_TEMP/bench.log"
+          grep -E 'missing from output' "$RUNNER_TEMP/bench.log" > "$RUNNER_TEMP/verify.txt"
+          fail=0
+          [ $code -ne 0 ] && { echo "bench/run.sh exited $code" >> "$RUNNER_TEMP/verify.txt"; fail=1; }
+          grep -qE ' [1-9][0-9]* missing' "$RUNNER_TEMP/verify.txt" && fail=1
+          [ -s "$RUNNER_TEMP/verify.txt" ] || fail=1
+          if grep -l engine_format "$W"/*.live.json 2>/dev/null; then
+            grep -ho '"kind":"engine_format","hint":"[^"]*"' "$W"/*.live.json >> "$RUNNER_TEMP/verify.txt"
+            fail=1
+          fi
+          exit $fail
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: live-bench
+          path: ${{ runner.temp }}/live
+          retention-days: 14
+      - name: Open or update the drift issue
+        if: failure() && steps.versions.outputs.installed != ''
+        env:
+          INSTALLED: ${{ steps.versions.outputs.installed }}
+        run: |
+          gh label create engine-drift --color B60205 --description "An engine update broke the benchmark" 2>/dev/null || true
+          { echo "The live benchmark failed with arjun $INSTALLED."; echo; echo '```'; cat "$RUNNER_TEMP/verify.txt" 2>/dev/null; echo '```'; echo; echo "Run: $RUN_URL"; } > "$RUNNER_TEMP/body.md"
+          n=$(gh issue list --label engine-drift --state open --json number --jq '.[0].number')
+          if [ -n "$n" ]; then
+            gh issue comment "$n" --body-file "$RUNNER_TEMP/body.md"
+          else
+            gh issue create --title "Engine drift: arjun $INSTALLED" --label engine-drift --body-file "$RUNNER_TEMP/body.md"
+          fi
+      - name: Open or update the bump PR
+        if: success()
+        env:
+          INSTALLED: ${{ steps.versions.outputs.installed }}
+          TESTED: ${{ steps.versions.outputs.tested }}
+        run: |
+          newer=$(printf '%s\n%s\n' "$TESTED" "$INSTALLED" | sort -V | tail -1)
+          if [ "$INSTALLED" = "$TESTED" ] || [ "$newer" != "$INSTALLED" ]; then
+            echo "arjun $INSTALLED is not newer than the tested $TESTED"; exit 0
+          fi
+          branch="engine-bump/arjun-$INSTALLED"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # only engines.json: the refreshed fixtures stay in the artifact
+          git checkout -- bench
+          git checkout -B "$branch"
+          jq --arg v "$INSTALLED" '.arjun.version = $v' engines.json > engines.json.new
+          python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); print("{\n" + ",\n".join("  %s: %s" % (json.dumps(k), json.dumps(v)) for k, v in d.items()) + "\n}")' engines.json.new > engines.json
+          rm engines.json.new
+          git add engines.json
+          git commit -m "Test with arjun $INSTALLED"
+          git push -f origin "$branch"
+          { echo "arjun $TESTED → $INSTALLED"; echo; echo "The live benchmark passed with arjun $INSTALLED:"; echo; echo '```'; cat "$RUNNER_TEMP/verify.txt"; echo '```'; echo; echo "The refreshed fixtures are in the live-bench artifact of $RUN_URL"; } > "$RUNNER_TEMP/body.md"
+          if [ -n "$(gh pr list --head "$branch" --state open --json number --jq '.[0].number')" ]; then
+            gh pr edit "$branch" --body-file "$RUNNER_TEMP/body.md"
+          else
+            gh pr create --head "$branch" --title "Test with arjun $INSTALLED" --body-file "$RUNNER_TEMP/body.md"
+          fi
