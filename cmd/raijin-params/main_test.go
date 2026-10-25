@@ -6,8 +6,11 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
+
+	raijinparams "github.com/protonnegativo/raijin-params"
 )
 
 func scopeFile(t *testing.T) string {
@@ -40,7 +43,7 @@ func TestBannerGoesToStderrOnly(t *testing.T) {
 	if code != 0 {
 		t.Fatalf("exit %d", code)
 	}
-	if !strings.Contains(errb.String(), "TGT-LOCK") || !strings.Contains(errb.String(), "raijin-params v"+version) {
+	if !strings.Contains(errb.String(), "TGT-LOCK") || !strings.Contains(errb.String(), "raijin-params "+version) {
 		t.Errorf("banner missing or without the version: %q", errb.String())
 	}
 	if strings.Contains(out.String(), "TGT-LOCK") {
@@ -151,8 +154,9 @@ func TestBudgetIsCountedAndPointsToRaw(t *testing.T) {
 // fakeArjun writes a script that answers like arjun: one export per method, nothing for /none.
 func fakeArjun(t *testing.T) string {
 	t.Helper()
-	p := filepath.Join(t.TempDir(), "arjun")
-	script := `#!/bin/sh
+	dir := t.TempDir()
+	p := filepath.Join(dir, "arjun")
+	script := "#!" + fakePython(t, dir, testedArjun(t)) + `
 while [ $# -gt 0 ]; do
   case "$1" in
     -i) list=$2; shift ;;
@@ -212,7 +216,7 @@ func TestScopeAloneTestsWhatTheScopeNames(t *testing.T) {
 	}
 	got := filepath.Join(dir, "targets.txt")
 	fake := filepath.Join(dir, "arjun")
-	script := "#!/bin/sh\nwhile [ $# -gt 0 ]; do [ \"$1\" = -i ] && cp \"$2\" " + got + "; [ \"$1\" = -oJ ] && echo '{}' > \"$2\"; shift; done\n"
+	script := "#!" + fakePython(t, dir, testedArjun(t)) + "\nwhile [ $# -gt 0 ]; do [ \"$1\" = -i ] && cp \"$2\" " + got + "; [ \"$1\" = -oJ ] && echo '{}' > \"$2\"; shift; done\n"
 	if err := os.WriteFile(fake, []byte(script), 0o700); err != nil {
 		t.Fatal(err)
 	}
@@ -261,21 +265,48 @@ func TestRenamedFieldIsAnEngineFormatError(t *testing.T) {
 	}
 }
 
-func TestVersionCheckWarnsOnAnOlderArjun(t *testing.T) {
-	// arjun's #! line names a "python" that answers 1.9.0 to the version script
+func TestVersionCheckWarnsOnAnotherMajor(t *testing.T) {
+	// arjun's #! line names a "python" that answers the version script; the tested version gets no
+	// warning, the next major does
+	tested := testedArjun(t)
 	dir := t.TempDir()
-	py, bin := filepath.Join(dir, "python"), filepath.Join(dir, "arjun")
-	if err := os.WriteFile(py, []byte("#!/bin/sh\necho 1.9.0\n"), 0o700); err != nil {
+	bin := filepath.Join(dir, "arjun")
+	if err := os.WriteFile(bin, []byte("#!"+fakePython(t, dir, tested)+"\n"), 0o700); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(bin, []byte("#!"+py+"\n"), 0o700); err != nil {
-		t.Fatal(err)
+	if errs := versionCheck(context.Background(), bin); len(errs) != 0 {
+		t.Errorf("tested version, no warning: %v", errs)
 	}
+	major, _ := strconv.Atoi(strings.SplitN(tested, ".", 2)[0])
+	next := strconv.Itoa(major+1) + ".0.0"
+	fakePython(t, dir, next)
 	errs := versionCheck(context.Background(), bin)
-	if len(errs) != 1 || errs[0].Kind != "engine_version" || !strings.HasPrefix(errs[0].Hint, "arjun 1.9.0 is not the tested ") {
+	if len(errs) != 1 || errs[0].Kind != "engine_version" || !strings.HasPrefix(errs[0].Hint, "arjun "+next+" is not the tested "+tested) || !strings.HasSuffix(errs[0].Hint, ", or run raijin-mcp update") {
 		t.Errorf("%v", errs)
 	}
 	if errs := versionCheck(context.Background(), filepath.Join(dir, "missing")); len(errs) != 0 {
 		t.Errorf("no arjun, no version, no warning: %v", errs)
 	}
+}
+
+// testedArjun is the arjun version in engines.json.
+func testedArjun(t *testing.T) string {
+	t.Helper()
+	engines, err := raijinparams.Engines()
+	if err != nil {
+		t.Fatal(err)
+	}
+	return engines["arjun"].Version
+}
+
+// fakePython writes dir/python: it answers version to the version script (-c) and runs anything else
+// with sh, so a fake arjun with it on its #! line looks like a pipx install of that version.
+func fakePython(t *testing.T, dir, version string) string {
+	t.Helper()
+	p := filepath.Join(dir, "python")
+	script := "#!/bin/sh\nif [ \"$1\" = -c ]; then echo " + version + "; exit 0; fi\nexec /bin/sh \"$@\"\n"
+	if err := os.WriteFile(p, []byte(script), 0o700); err != nil {
+		t.Fatal(err)
+	}
+	return p
 }

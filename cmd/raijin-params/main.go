@@ -23,8 +23,6 @@ import (
 	"github.com/protonnegativo/raijin-params/internal/state"
 )
 
-const version = "0.1.0"
-
 type multi []string
 
 func (m *multi) String() string     { return strings.Join(*m, ",") }
@@ -68,7 +66,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 		banner.Write(stderr, "raijin-params", version, useColor(stderr))
 	}
 	if *showVersion {
-		fmt.Fprintln(stdout, "raijin-params", version)
+		fmt.Fprintln(stdout, versionLine())
 		return 0
 	}
 	if *scopeFile == "" {
@@ -188,7 +186,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 		})
 		switch {
 		case errors.Is(err, arjun.ErrNotFound):
-			res.Errors = append(res.Errors, schema.Error{Kind: "missing_engine", Hint: "install arjun (pipx install arjun, or pip install arjun) or pass --arjun <path>"})
+			res.Errors = append(res.Errors, schema.Error{Kind: "missing_engine", Hint: "install arjun (pipx install arjun, or pip install arjun) or pass --arjun <path>, or run raijin-mcp update"})
 			res.Summary = "arjun not found, nothing tested"
 			res.Raw = ""
 			if tempRaw {
@@ -271,7 +269,7 @@ func versionCheck(ctx context.Context, bin string) []schema.Error {
 	if !arjun.Untested(installed, e.Version) {
 		return nil
 	}
-	return []schema.Error{{Kind: "engine_version", Hint: fmt.Sprintf("arjun %s is not the tested %s; results may be incomplete. Install the tested version: %s", installed, e.Version, e.Install(e.Version))}}
+	return []schema.Error{{Kind: "engine_version", Hint: fmt.Sprintf("arjun %s is not the tested %s; results may be incomplete. Install the tested version: %s, or run raijin-mcp update", installed, e.Version, e.Install(e.Version))}}
 }
 
 // useColor is true when w is a terminal and NO_COLOR is not set.
