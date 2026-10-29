@@ -320,8 +320,11 @@ func TestInvalidScopeIsStructuredAndStopsBeforeTheEngine(t *testing.T) {
 	// --arjun points at a binary that does not exist: if the engine were reached, the error would be
 	// missing_engine and not a scope error.
 	code := run([]string{"--scope", p, "-u", "https://a.example.com/", "--arjun", "/nonexistent/arjun"}, &out, &errb)
-	if code == 0 {
-		t.Fatalf("exit 0 for an invalid scope: %s", out.String())
+	if code != 2 {
+		t.Fatalf("exit %d for an invalid scope, want 2: %s", code, out.String())
+	}
+	if !strings.HasPrefix(out.String(), `{"schema_version":1,`) {
+		t.Errorf("stdout must start with schema_version: %.80s", out.String())
 	}
 	var res struct {
 		SchemaVersion int    `json:"schema_version"`
@@ -353,7 +356,7 @@ func TestInvalidScopeIsStructuredAndStopsBeforeTheEngine(t *testing.T) {
 func TestMissingScopeFileIsAScopeError(t *testing.T) {
 	var out, errb bytes.Buffer
 	code := run([]string{"--scope", filepath.Join(t.TempDir(), "nope.txt"), "-u", "https://a.example.com/"}, &out, &errb)
-	if code == 0 || !strings.Contains(out.String(), `"kind":"scope"`) {
+	if code != 2 || !strings.Contains(out.String(), `"kind":"scope"`) {
 		t.Errorf("exit %d, out %s", code, out.String())
 	}
 }
