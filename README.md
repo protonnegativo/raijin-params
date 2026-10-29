@@ -1,5 +1,11 @@
 # ⚡ Raijin Params
 
+[![CI](https://github.com/protonnegativo/raijin-params/actions/workflows/ci.yml/badge.svg)](https://github.com/protonnegativo/raijin-params/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/protonnegativo/raijin-params)](https://github.com/protonnegativo/raijin-params/releases/latest)
+[![License: MIT](https://img.shields.io/github/license/protonnegativo/raijin-params)](LICENSE)
+[![Go Reference](https://pkg.go.dev/badge/github.com/protonnegativo/raijin-params.svg)](https://pkg.go.dev/github.com/protonnegativo/raijin-params)
+[![Go Report Card](https://goreportcard.com/badge/github.com/protonnegativo/raijin-params)](https://goreportcard.com/report/github.com/protonnegativo/raijin-params)
+
 **arjun for AI agents: every hidden parameter that changes the response, the same parameter set across many URLs collapsed into one entry, the ones that smell like SSRF, file read, redirects, command injection, debug or IDOR ranked first.**
 
 `raijin-params` is a tool of **Raijin**, an arsenal of offensive security tools built for AI agents. It runs [arjun](https://github.com/s0md3v/Arjun) underneath and returns the **Raijin Schema**: one compact JSON where every URL, method and parameter arjun found is listed, URLs with exactly the same parameters share one entry, parameters whose names suggest an attack class (`url`, `next`, `file`, `cmd`, `debug`, `admin`, `id`, `sort`...) are ranked findings, plain ones (`page`, `lang`, `tab`) are groups, and anything it had to cut is counted.
