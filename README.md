@@ -18,19 +18,19 @@ Here is the same run, with the same results, read by an agent (tokens, `o200k_ba
 
 ```
 Noisy run: 46 URLs, 123 parameters, 1 finding
-  raijin-params  ▏                          185 tokens
+  raijin-params  ▏                          196 tokens
   arjun -oT      ▋                        1,302 tokens
   arjun -oJ      ███▉                     7,530 tokens
   arjun text     ████████████████████    38,814 tokens
 
 Findings run: 13 URLs, 22 parameters, 12 findings (5 high, 6 medium, 1 low)
-  raijin-params  █▎                         574 tokens
+  raijin-params  █▎                         585 tokens
   arjun -oT      ▊                          312 tokens
   arjun -oJ      ████▉                    2,213 tokens
   arjun text     ████████████████████     9,055 tokens
 ```
 
-raijin-params reads **41×** fewer tokens than `arjun -oJ` on the noisy run and **3.9×** fewer on the findings run, and **210×** and **16×** fewer than arjun's default text output. Each run's bars are drawn to scale against arjun's text output.
+raijin-params reads **38×** fewer tokens than `arjun -oJ` on the noisy run and **3.8×** fewer on the findings run, and **198×** and **15×** fewer than arjun's default text output. Each run's bars are drawn to scale against arjun's text output.
 
 - **Nothing is lost.** Every URL, method and parameter arjun reported is in the output, with the headers arjun sent when they are not its defaults. `bench/verify.py` checked all 145 results of both runs and none were missing.
 - **Same parameters, one entry.** 30 product pages that all take `page`, `currency` and `format` are one group with one location, `/product/[1-30]`. `/fetch` and `/preview`, which both take `url` and `callback`, are one finding.
@@ -38,7 +38,7 @@ raijin-params reads **41×** fewer tokens than `arjun -oJ` on the noisy run and 
 - **Output is bounded.** On a huge run, `--max-bytes` cuts the least important data first and counts every cut. arjun's output grows with every URL.
 - **Details are one file away.** arjun's JSON exports are saved to disk, and their path is in `raw`. They replay with `--input`.
 
-Against `arjun -oT`, raijin-params is **7×** smaller on the noisy run and **1.8× larger** on the findings run. When every URL has its own parameters there is little to collapse, and the ids, severities and classes cost more than a bare URL list. `-oT` also gives no ranking, writes made-up values into every URL (`/fetch?callback=8551&url=1746`), and gives a POST result as a URL and a tab. Stripping arjun's JSON of its headers and indentation with `jq` gives about the same size as `-oT` (1,303 and 347 tokens). Full method and numbers are in [BENCHMARK.md](BENCHMARK.md), and `bench/run.sh` reproduces them.
+Against `arjun -oT`, raijin-params is **6.6×** smaller on the noisy run and **1.9× larger** on the findings run. When every URL has its own parameters there is little to collapse, and the ids, severities and classes cost more than a bare URL list. `-oT` also gives no ranking, writes made-up values into every URL (`/fetch?callback=8551&url=1746`), and gives a POST result as a URL and a tab. Stripping arjun's JSON of its headers and indentation with `jq` gives about the same size as `-oT` (1,303 and 347 tokens). Full method and numbers are in [BENCHMARK.md](BENCHMARK.md), and `bench/run.sh` reproduces them.
 
 ## Install
 
@@ -80,6 +80,7 @@ raijin-params runs arjun once per method in `--method` (`GET` by default; `POST`
 
 ```json
 {
+  "schema_version": 1,
   "tool": "raijin-params",
   "version": "v0.1.0",
   "target": "13 target(s)",
@@ -146,7 +147,9 @@ What the reducer does:
   4. the lowest-ranked findings.
 
   Every cut is counted in `omitted`, `budget.truncated` is set, and `next` points to the raw file. `--max-items` caps the number of findings (0, the default, keeps all).
-- **Errors** say what to try next. If arjun is missing, the exit code is 2.
+- **`schema_version`** is the first field of every result (now `1`). It changes only when a field readers depend on changes meaning or goes away.
+- **Errors** say what to try next. An invalid scope file gives one `kind:"scope"` error per bad line (with the line and the reason in `hint`) and nothing is run.
+- **Exit codes:** `0` ok; `1` wrong usage (bad flag, missing `--scope`, no target in scope), nothing useful on stdout; `2` a structured error, with the JSON on stdout: an invalid scope (`kind:"scope"`) or arjun missing (`kind:"missing_engine"`). An agent tells them apart by `kind`.
 
 Fields an agent can rebuild are left out to save tokens:
 
@@ -156,7 +159,7 @@ Fields an agent can rebuild are left out to save tokens:
 - `origin`, `omitted`, `errors` and `next` appear only when they are not empty.
 - `budget` appears only when something was cut.
 
-The JSON is compact (one line) by default because indentation costs 59% to 78% more tokens in the benchmark; `--pretty` indents it. `--format table` prints a short human view of the same result; it lists finding locations but only counts group URLs.
+The JSON is compact (one line) by default because indentation costs 57% to 77% more tokens in the benchmark; `--pretty` indents it. `--format table` prints a short human view of the same result; it lists finding locations but only counts group URLs.
 
 The Raijin banner is **off by default**, so normal runs stay small. `--banner` prints it to **stderr** (never stdout, so the JSON is untouched), with the version taken from the binary. Colors are disabled when `NO_COLOR` is set or stderr is not a terminal.
 
@@ -195,7 +198,7 @@ bench/run.sh            # replay bench/fixtures and count tokens
 LIVE=1 bench/run.sh     # start the local lab, run arjun again, refresh the fixtures
 ```
 
-Standard library only. arjun runs as a subprocess, so the binary stays small and arjun can be updated on its own. Support for [x8](https://github.com/Sh1Yo/x8) as a second engine is planned.
+Its one dependency is [raijin-core](https://github.com/protonnegativo/raijin-core), the scope, schema and state code shared by every Raijin tool; the rest is the standard library. arjun runs as a subprocess, so the binary stays small and arjun can be updated on its own. Support for [x8](https://github.com/Sh1Yo/x8) as a second engine is planned.
 
 ## Responsible use
 

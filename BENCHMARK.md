@@ -28,8 +28,8 @@ Reproduce: `bench/run.sh` replays the saved runs in `bench/fixtures`. `LIVE=1 be
 | arjun `-oJ`, no headers, compact | 3,977 | 1,303 | 5.8× |
 | arjun text (stdout+stderr) | 83,701 | 38,814 | 0.19× |
 | arjun `-oT` | 2,964 | 1,302 | 5.8× |
-| **raijin-params JSON (default)** | 575 | **185** | **41×** |
-| raijin-params `--pretty` | 942 | 294 | 26× |
+| **raijin-params JSON (default)** | 605 | **196** | **38×** |
+| raijin-params `--pretty` | 976 | 308 | 24× |
 | raijin-params `--format table` | 221 | 72 | 105× |
 
 ## Scenario 2: findings
@@ -47,8 +47,8 @@ Reproduce: `bench/run.sh` replays the saved runs in `bench/fixtures`. `LIVE=1 be
 | arjun `-oJ`, no headers, compact | 1,025 | 347 | 6.4× |
 | arjun text (stdout+stderr) | 19,533 | 9,055 | 0.24× |
 | arjun `-oT` | 667 | 312 | 7.1× |
-| **raijin-params JSON (default)** | 1,879 | **574** | **3.9×** |
-| raijin-params `--pretty` | 3,472 | 1,021 | 2.2× |
+| **raijin-params JSON (default)** | 1,909 | **585** | **3.8×** |
+| raijin-params `--pretty` | 3,506 | 1,035 | 2.1× |
 | raijin-params `--format table` | 784 | 237 | 9.3× |
 
 In a live run (not a replay) the raijin-params JSON also has `raw`, the path of the saved exports: 17 tokens for a default temp path like `/tmp/raijin-params-3172893561.json`.
@@ -64,6 +64,6 @@ The unit tests cover the rest of the lossless rules on `testdata/sample.json` (c
 
 ## Reading the numbers
 
-- **Noisy:** the same parameter set on 30 and 15 URLs is one entry each, and a run of URLs is one location (`/product/[1-30]`), so raijin-params is 41× smaller than arjun's JSON and 7× smaller than its smallest text export.
-- **Findings:** every URL has its own parameters, so there is little to collapse. raijin-params is 3.9× smaller than arjun's JSON, and 16× smaller than arjun's default output, which is mostly progress lines. It is **1.8× larger** than `arjun -oT` (312 tokens) and 1.7× larger than the JSON without headers (347 tokens): the ids, severities and classes that rank `cmd`, `url` and `file` above `ref` and `tab` cost more than a bare URL list. `-oT` also has no ranking and writes made-up values into every URL, so an agent has to strip them to tell the parameters apart.
-- **Indentation** (`--pretty`) costs 59% more tokens on the noisy run and 78% more on the findings run, which is why compact is the default.
+- **Noisy:** the same parameter set on 30 and 15 URLs is one entry each, and a run of URLs is one location (`/product/[1-30]`), so raijin-params is 38× smaller than arjun's JSON and 6.6× smaller than its smallest text export.
+- **Findings:** every URL has its own parameters, so there is little to collapse. raijin-params is 3.8× smaller than arjun's JSON, and 15× smaller than arjun's default output, which is mostly progress lines. It is **1.9× larger** than `arjun -oT` (312 tokens) and 1.7× larger than the JSON without headers (347 tokens): the ids, severities and classes that rank `cmd`, `url` and `file` above `ref` and `tab` cost more than a bare URL list. `-oT` also has no ranking and writes made-up values into every URL, so an agent has to strip them to tell the parameters apart.
+- **Indentation** (`--pretty`) costs 57% more tokens on the noisy run and 77% more on the findings run, which is why compact is the default.
