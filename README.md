@@ -149,7 +149,7 @@ What the reducer does:
   Every cut is counted in `omitted`, `budget.truncated` is set, and `next` points to the raw file. `--max-items` caps the number of findings (0, the default, keeps all).
 - **`schema_version`** is the first field of every result (now `1`). It changes only when a field readers depend on changes meaning or goes away.
 - **Errors** say what to try next. An invalid scope file gives one `kind:"scope"` error per bad line (with the line and the reason in `hint`) and nothing is run.
-- **Exit codes:** `0` ok; `1` wrong usage (bad flag, missing `--scope`, no target in scope), nothing useful on stdout; `2` a structured error, with the JSON on stdout: an invalid scope (`kind:"scope"`) or arjun missing (`kind:"missing_engine"`). An agent tells them apart by `kind`.
+- **Exit codes:** `0` ok; `1` wrong usage (bad flag, missing `--scope`, no target in scope), nothing useful on stdout; `2` a structured error, with the JSON on stdout: an invalid scope (`kind:"scope"`), a scope that names no single host to scan (the JSON has `next`), or arjun missing (`kind:"missing_engine"`). An agent tells them apart by `kind`.
 
 Fields an agent can rebuild are left out to save tokens:
 

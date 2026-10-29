@@ -55,7 +55,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 	showVersion := fs.Bool("version", false, "print the version")
 	showBanner := fs.Bool("banner", false, "print the Raijin banner to stderr (off by default to keep output small)")
 	fs.Usage = func() {
-		fmt.Fprintf(stderr, "usage: raijin-params --scope scope.txt [-u url | -l urls.txt | --input arjun.json] [flags] [-- extra arjun args]\n\nWith no targets it tests every host the scope names.\n\nExit codes: 0 ok, 1 wrong usage, 2 structured error (JSON on stdout: invalid scope, arjun missing).\n\n")
+		fmt.Fprintf(stderr, "usage: raijin-params --scope scope.txt [-u url | -l urls.txt | --input arjun.json] [flags] [-- extra arjun args]\n\nWith no targets it tests every host the scope names.\n\nExit codes: 0 ok, 1 wrong usage, 2 structured error (JSON on stdout: invalid scope, scope with no host to scan, arjun missing).\n\n")
 		fs.PrintDefaults()
 	}
 	if err := fs.Parse(args); err != nil {
@@ -158,7 +158,7 @@ func run(args []string, stdout, stderr io.Writer) int {
 				res.Summary = "the scope names no single host to scan"
 				res.Target = *scopeFile
 				write(stdout, &res, *format, *pretty)
-				return 1
+				return 2
 			}
 			fmt.Fprintln(stderr, "raijin-params: no targets in scope")
 			return 1

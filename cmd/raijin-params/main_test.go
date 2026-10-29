@@ -388,3 +388,26 @@ func TestStateMarksNewFindingsOnce(t *testing.T) {
 		t.Errorf("second run should not: %s", second.String())
 	}
 }
+
+func TestScopeNamingNoHostExitsTwoWithJSON(t *testing.T) {
+	p := filepath.Join(t.TempDir(), "scope.txt")
+	if err := os.WriteFile(p, []byte("*.example.com\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	var out, errb bytes.Buffer
+	if code := run([]string{"--scope", p}, &out, &errb); code != 2 {
+		t.Fatalf("exit %d, want 2: %s", code, out.String())
+	}
+	if !strings.HasPrefix(out.String(), `{"schema_version":1,`) {
+		t.Errorf("stdout must start with schema_version: %.80s", out.String())
+	}
+}
+
+func TestUsageErrorsPrintNoJSON(t *testing.T) {
+	for _, args := range [][]string{{"--bogus"}, {"--input", "../../testdata/sample.json"}} {
+		var out, errb bytes.Buffer
+		if code := run(args, &out, &errb); code != 1 || out.Len() != 0 {
+			t.Errorf("%v: exit %d, stdout %q; want 1 and empty", args, code, out.String())
+		}
+	}
+}
