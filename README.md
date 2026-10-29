@@ -30,7 +30,7 @@ Findings run: 13 URLs, 22 parameters, 12 findings (5 high, 6 medium, 1 low)
   arjun text     ████████████████████     9,055 tokens
 ```
 
-On the findings run, `arjun -oT` is smaller: 312 tokens against 585 for raijin-params. It is only a list of URLs with made-up values, so it has no groups, no ranking and no severity, and the extra tokens in raijin-params go to those: URLs with the same parameters in one entry, and `cmd`, `url`, `file`, `next` and `debug` ranked ahead of `ref` and `tab`. If you scan a few URLs and only need the parameter names, `arjun -oT` is the cheaper choice. raijin-params pays off as the run grows: on the noisy run it spends 196 tokens against 7,530 for `arjun -oJ` and 1,302 for `arjun -oT`.
+On the findings run, `arjun -oT` is smaller: 312 tokens against 585 for raijin-params. It is only a list of URLs with made-up values, so it has no groups, no ranking and no severity, and the extra tokens in raijin-params go to those: URLs with the same parameters in one entry, and `cmd`, `url`, `file`, `next` and `debug` ranked ahead of `ref` and `tab`. Even arjun's JSON without headers, compact (`arjun -oJ`, no headers, compact) is smaller on this run, at 347 tokens, because it does no grouping and no ranking. If you scan a few URLs and only need the parameter names, `arjun -oT` is the cheaper choice. raijin-params pays off as the run grows: on the noisy run it spends 196 tokens against 7,530 for `arjun -oJ` and 1,302 for `arjun -oT`.
 
 raijin-params reads **38×** fewer tokens than `arjun -oJ` on the noisy run and **3.8×** fewer on the findings run, and **198×** and **15×** fewer than arjun's default text output. Each run's bars are drawn to scale against arjun's text output.
 
