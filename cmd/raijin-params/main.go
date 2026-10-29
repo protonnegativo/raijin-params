@@ -5,7 +5,6 @@ package main
 import (
 	"bufio"
 	"context"
-	"encoding/json"
 	"errors"
 	"flag"
 	"fmt"
@@ -14,13 +13,13 @@ import (
 	"os/signal"
 	"strings"
 
+	"github.com/protonnegativo/raijin-core/scope"
+	"github.com/protonnegativo/raijin-core/state"
 	raijinparams "github.com/protonnegativo/raijin-params"
 	"github.com/protonnegativo/raijin-params/internal/arjun"
 	"github.com/protonnegativo/raijin-params/internal/banner"
 	"github.com/protonnegativo/raijin-params/internal/reduce"
 	"github.com/protonnegativo/raijin-params/internal/schema"
-	"github.com/protonnegativo/raijin-params/internal/scope"
-	"github.com/protonnegativo/raijin-params/internal/state"
 )
 
 type multi []string
@@ -73,9 +72,22 @@ func run(args []string, stdout, stderr io.Writer) int {
 		fmt.Fprintln(stderr, "raijin-params: --scope is required")
 		return 1
 	}
+	res := schema.Result{
+		Tool:     "raijin-params",
+		Version:  version,
+		Findings: []schema.Finding{},
+		Groups:   []schema.Group{},
+		Omitted:  map[string]int{},
+		Errors:   []schema.Error{},
+		Next:     []string{},
+		Budget:   schema.Budget{MaxItems: *maxItems, MaxBytes: *maxBytes},
+	}
 	sc, err := scope.Load(*scopeFile)
 	if err != nil {
-		fmt.Fprintln(stderr, "raijin-params: scope:", err)
+		// An invalid scope is an error the agent can fix: report every bad line as JSON and run nothing.
+		res.Errors = append(res.Errors, scope.SchemaErrors(err)...)
+		res.Summary = "invalid scope file, nothing scanned"
+		write(stdout, &res, *format, *pretty)
 		return 1
 	}
 	var ms []string
@@ -90,17 +102,6 @@ func run(args []string, stdout, stderr io.Writer) int {
 			fmt.Fprintf(stderr, "raijin-params: unknown method %q (GET, POST, JSON or XML)\n", m)
 			return 1
 		}
-	}
-
-	res := schema.Result{
-		Tool:     "raijin-params",
-		Version:  version,
-		Findings: []schema.Finding{},
-		Groups:   []schema.Group{},
-		Omitted:  map[string]int{},
-		Errors:   []schema.Error{},
-		Next:     []string{},
-		Budget:   schema.Budget{MaxItems: *maxItems, MaxBytes: *maxBytes},
 	}
 
 	var results []arjun.Result
@@ -229,7 +230,9 @@ func run(args []string, stdout, stderr io.Writer) int {
 		if err != nil {
 			res.Errors = append(res.Errors, schema.Error{Kind: "state_error", Hint: err.Error()})
 		} else {
-			newCount = st.Mark(res.Findings, out.Locations)
+			newCount = state.Mark(st, res.Findings, out.Locations,
+				func(f *schema.Finding) string { return f.Fingerprint },
+				func(f *schema.Finding) { f.New = true })
 			if err := st.Save(*statePath); err != nil {
 				res.Errors = append(res.Errors, schema.Error{Kind: "state_error", Hint: err.Error()})
 			}
@@ -386,12 +389,7 @@ func write(w io.Writer, res *schema.Result, format string, pretty bool) {
 		}
 		return
 	}
-	enc := json.NewEncoder(w)
-	enc.SetEscapeHTML(false)
-	if pretty {
-		enc.SetIndent("", "  ")
-	}
-	_ = enc.Encode(res)
+	_ = schema.Write(w, res, pretty)
 }
 
 // describe is a one-line view of an entry for the table: method, parameters, custom headers.
