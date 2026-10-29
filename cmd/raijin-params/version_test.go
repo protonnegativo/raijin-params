@@ -29,6 +29,19 @@ func TestBuildVersion(t *testing.T) {
 	}
 }
 
+func TestBuildVersionPrefersReleaseVersion(t *testing.T) {
+	old := releaseVersion
+	t.Cleanup(func() { releaseVersion = old })
+	releaseVersion = "v9.9.9"
+	info := &debug.BuildInfo{Main: debug.Module{Version: "(devel)"}}
+	if got := buildVersion(info, true); got != "v9.9.9" {
+		t.Errorf("got %q, want v9.9.9", got)
+	}
+	if got := buildVersion(nil, false); got != "v9.9.9" {
+		t.Errorf("without build info: got %q, want v9.9.9", got)
+	}
+}
+
 func TestVersionLine(t *testing.T) {
 	engines, err := raijinparams.Engines()
 	if err != nil {

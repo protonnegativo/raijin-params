@@ -310,3 +310,104 @@ func fakePython(t *testing.T, dir, version string) string {
 	}
 	return p
 }
+
+func TestInvalidScopeIsStructuredAndStopsBeforeTheEngine(t *testing.T) {
+	p := filepath.Join(t.TempDir(), "scope.txt")
+	if err := os.WriteFile(p, []byte("example.com:443\n10.0.0.7/24\n*.example.com\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	var out, errb bytes.Buffer
+	// --arjun points at a binary that does not exist: if the engine were reached, the error would be
+	// missing_engine and not a scope error.
+	code := run([]string{"--scope", p, "-u", "https://a.example.com/", "--arjun", "/nonexistent/arjun"}, &out, &errb)
+	if code != 2 {
+		t.Fatalf("exit %d for an invalid scope, want 2: %s", code, out.String())
+	}
+	if !strings.HasPrefix(out.String(), `{"schema_version":1,`) {
+		t.Errorf("stdout must start with schema_version: %.80s", out.String())
+	}
+	var res struct {
+		SchemaVersion int    `json:"schema_version"`
+		Tool          string `json:"tool"`
+		Summary       string `json:"summary"`
+		Findings      []any  `json:"findings"`
+		Errors        []struct{ Kind, Hint string }
+	}
+	if err := json.Unmarshal(out.Bytes(), &res); err != nil {
+		t.Fatalf("stdout is not JSON: %v\n%s", err, out.String())
+	}
+	if res.SchemaVersion != 1 || res.Tool != "raijin-params" || len(res.Findings) != 0 {
+		t.Errorf("unexpected envelope: %s", out.String())
+	}
+	if len(res.Errors) != 2 {
+		t.Fatalf("want one error per invalid line (2), got %s", out.String())
+	}
+	for i, want := range []string{"port in rule", "host bits"} {
+		e := res.Errors[i]
+		if e.Kind != "scope" || !strings.Contains(e.Hint, want) {
+			t.Errorf("error %d = %+v, want kind scope mentioning %q", i, e, want)
+		}
+	}
+	if strings.Contains(out.String(), "missing_engine") {
+		t.Error("the engine ran before the scope was rejected")
+	}
+}
+
+func TestMissingScopeFileIsAScopeError(t *testing.T) {
+	var out, errb bytes.Buffer
+	code := run([]string{"--scope", filepath.Join(t.TempDir(), "nope.txt"), "-u", "https://a.example.com/"}, &out, &errb)
+	if code != 2 || !strings.Contains(out.String(), `"kind":"scope"`) {
+		t.Errorf("exit %d, out %s", code, out.String())
+	}
+}
+
+func TestSchemaVersionIsTheFirstField(t *testing.T) {
+	var out, errb bytes.Buffer
+	if code := run([]string{"--scope", scopeFile(t), "--input", "../../testdata/sample.json"}, &out, &errb); code != 0 {
+		t.Fatalf("exit %d", code)
+	}
+	if !strings.HasPrefix(out.String(), `{"schema_version":1,"tool":"raijin-params",`) {
+		t.Errorf("output must start with schema_version: %.80s", out.String())
+	}
+}
+
+func TestStateMarksNewFindingsOnce(t *testing.T) {
+	st := filepath.Join(t.TempDir(), "state.json")
+	args := []string{"--scope", scopeFile(t), "--input", "../../testdata/sample.json", "--state", st}
+	var first, second, errb bytes.Buffer
+	if code := run(args, &first, &errb); code != 0 {
+		t.Fatalf("exit %d", code)
+	}
+	if !strings.Contains(first.String(), `"new":true`) {
+		t.Errorf("first run should mark findings as new: %s", first.String())
+	}
+	if code := run(args, &second, &errb); code != 0 {
+		t.Fatalf("exit %d", code)
+	}
+	if strings.Contains(second.String(), `"new":true`) {
+		t.Errorf("second run should not: %s", second.String())
+	}
+}
+
+func TestScopeNamingNoHostExitsTwoWithJSON(t *testing.T) {
+	p := filepath.Join(t.TempDir(), "scope.txt")
+	if err := os.WriteFile(p, []byte("*.example.com\n"), 0o600); err != nil {
+		t.Fatal(err)
+	}
+	var out, errb bytes.Buffer
+	if code := run([]string{"--scope", p}, &out, &errb); code != 2 {
+		t.Fatalf("exit %d, want 2: %s", code, out.String())
+	}
+	if !strings.HasPrefix(out.String(), `{"schema_version":1,`) {
+		t.Errorf("stdout must start with schema_version: %.80s", out.String())
+	}
+}
+
+func TestUsageErrorsPrintNoJSON(t *testing.T) {
+	for _, args := range [][]string{{"--bogus"}, {"--input", "../../testdata/sample.json"}} {
+		var out, errb bytes.Buffer
+		if code := run(args, &out, &errb); code != 1 || out.Len() != 0 {
+			t.Errorf("%v: exit %d, stdout %q; want 1 and empty", args, code, out.String())
+		}
+	}
+}

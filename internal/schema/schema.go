@@ -9,53 +9,24 @@
 // to the result: they are what an agent reads to build its next requests.
 package schema
 
-import (
-	"bytes"
-	"encoding/json"
+import core "github.com/protonnegativo/raijin-core/schema"
+
+// The envelope (Result, Error, Budget, schema_version, Marshal, the ranks) lives in raijin-core and is
+// shared by every Raijin tool. Finding and Group stay here: their fields are this tool's contract.
+type (
+	// Result is the top-level object this tool writes to stdout. Origin is the scheme and host every URL
+	// shares; locations are then written without it.
+	Result = core.Result[Finding, Group]
+	Error  = core.Error
+	Budget = core.Budget
 )
 
-// Marshal is json.Marshal without HTML escaping: "&" in a URL stays "&" instead of "&", which costs
-// tokens and nothing else.
-func Marshal(v any) ([]byte, error) {
-	var b bytes.Buffer
-	enc := json.NewEncoder(&b)
-	enc.SetEscapeHTML(false)
-	if err := enc.Encode(v); err != nil {
-		return nil, err
-	}
-	return bytes.TrimSuffix(b.Bytes(), []byte("\n")), nil
-}
-
-// Result is the top-level object a Raijin tool writes to stdout.
-type Result struct {
-	Tool    string `json:"tool"`
-	Version string `json:"version"`
-	Target  string `json:"target"`
-	Summary string `json:"summary"`
-	// Origin is the scheme and host every URL shares; locations are then written without it.
-	Origin   string         `json:"origin,omitempty"`
-	Findings []Finding      `json:"findings"`
-	Groups   []Group        `json:"groups"`
-	Omitted  map[string]int `json:"omitted,omitempty"`
-	Errors   []Error        `json:"errors,omitempty"`
-	Next     []string       `json:"next,omitempty"`
-	// Raw is the file with the engine's full output, for details the result leaves out.
-	Raw    string `json:"raw,omitempty"`
-	Budget Budget `json:"budget"`
-}
-
-// MarshalJSON writes the budget only when something was cut.
-func (r Result) MarshalJSON() ([]byte, error) {
-	type plain Result
-	out := struct {
-		plain
-		Budget *Budget `json:"budget,omitempty"`
-	}{plain: plain(r)}
-	if r.Budget.Truncated {
-		out.Budget = &r.Budget
-	}
-	return Marshal(out)
-}
+var (
+	Marshal        = core.Marshal
+	Write          = core.Write
+	SeverityRank   = core.SeverityRank
+	ConfidenceRank = core.ConfidenceRank
+)
 
 // Request is how the parameters of an entry are sent. Zero values are left out: no method means GET
 // (query string), and no headers means arjun sent only its default headers.
@@ -99,34 +70,4 @@ type Group struct {
 	// Count is the number of URLs; it is set only when the budget cut Locations.
 	Count int `json:"count,omitempty"`
 	URLs  int `json:"-"`
-}
-
-// Error is a problem during the run, with a hint about what to try next.
-type Error struct {
-	Kind string `json:"kind"`
-	Hint string `json:"hint"`
-}
-
-// Budget reports the output limits that were applied.
-type Budget struct {
-	MaxItems  int  `json:"max_items"`
-	MaxBytes  int  `json:"max_bytes"`
-	Truncated bool `json:"truncated"`
-}
-
-// SeverityRank orders severities from most to least important.
-var SeverityRank = map[string]int{
-	"critical": 5,
-	"high":     4,
-	"medium":   3,
-	"low":      2,
-	"info":     1,
-	"unknown":  0,
-}
-
-// ConfidenceRank orders confidence values: a verified finding before a matched one before a heuristic one.
-var ConfidenceRank = map[string]int{
-	"verified":  2,
-	"":          1,
-	"heuristic": 0,
 }

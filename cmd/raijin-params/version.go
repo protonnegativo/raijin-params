@@ -9,15 +9,22 @@ import (
 	raijinparams "github.com/protonnegativo/raijin-params"
 )
 
+// releaseVersion is set by the release build (-ldflags "-X main.releaseVersion=vX.Y.Z"). It has to be a
+// plain string: -X does not reach a variable that is initialized by a function call, such as version.
+var releaseVersion string
+
 // version is the release this binary was installed from (go install ...@vX.Y.Z or @latest), or "dev"
 // plus the commit for a local go build.
 var version = buildVersion(debug.ReadBuildInfo())
 
-// buildVersion is the module version when it is a real one; otherwise "dev", then the first 12 chars of
+// buildVersion is releaseVersion when the build set it; otherwise the module version when it is a real one; otherwise "dev", then the first 12 chars of
 // vcs.revision and +dirty when vcs.modified is true. A build from a checkout records vcs.* settings (and,
 // since Go 1.24, a pseudo-version made from them): that is a local build, not a release; go install
 // from the module proxy records none.
 func buildVersion(info *debug.BuildInfo, ok bool) string {
+	if releaseVersion != "" {
+		return releaseVersion
+	}
 	if !ok || info == nil {
 		return "dev"
 	}

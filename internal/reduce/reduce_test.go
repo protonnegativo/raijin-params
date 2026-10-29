@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/protonnegativo/raijin-core/scope"
 	"github.com/protonnegativo/raijin-params/internal/arjun"
 	"github.com/protonnegativo/raijin-params/internal/schema"
-	"github.com/protonnegativo/raijin-params/internal/scope"
 )
 
 func load(t *testing.T) []arjun.Result {
